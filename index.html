@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>节点订阅</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;padding:24px 16px;max-width:640px;margin-left:auto;margin-right:auto;color:#222;background:#fff}
+h1{font-size:20px;margin:0 0 8px}
+p{color:#666;font-size:14px;line-height:1.6}
+code{background:#f2f2f2;padding:2px 6px;border-radius:4px;font-size:13px;word-break:break-all}
+button{font-size:15px;padding:10px 18px;border:0;border-radius:8px;background:#1677ff;color:#fff;margin:8px 8px 8px 0}
+button:active{opacity:.8}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:16px}
+td,th{border-bottom:1px solid #eee;padding:8px 4px;text-align:left}
+th{color:#888;font-weight:400}
+pre{background:#f7f7f7;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-all;font-size:12px}
+</style>
+</head>
+<body>
+<h1>节点订阅</h1>
+<p>订阅链接（客户端直接填这个地址拉取）：</p>
+<p><code id="suburl"></code></p>
+<p>
+<button onclick="copySub()">复制订阅内容</button>
+<button onclick="copyUrl()">复制订阅链接</button>
+</p>
+<p id="msg"></p>
+<table>
+<tr><th>节点</th><th>地区</th><th>到期</th></tr>
+<tr><td>vless-deplexo-fr</td><td>法国</td><td>长期有效</td></tr>
+<tr><td>vless-railway-us</td><td>美国</td><td>约 2026-12-06</td></tr>
+<tr><td>vless-wasmer-sg</td><td>美国（客户端显新加坡）</td><td>长期有效</td></tr>
+<tr><td>vless-cloady-us</td><td>美国</td><td>长期有效</td></tr>
+<tr><td>vless-railway2-us</td><td>美国</td><td>约 2026-12-15</td></tr>
+</table>
+<p>更新：2026-11-16，共 5 个节点。</p>
+<pre id="b64"></pre>
+<script>
+var B64 = "dmxlc3M6Ly9kOTkxNGM2Yy01MzA2LTQxMWEtOWQ2ZC03MzJhM2E1Mzc1NGRAaGVsbG8tbXVzZS1kZXBsZXhvLmRlLmRlcGxleG8uY29tOjQ0Mz9lbmNyeXB0aW9uPW5vbmUmc2VjdXJpdHk9dGxzJnNuaT1oZWxsby1tdXNlLWRlcGxleG8uZGUuZGVwbGV4by5jb20mdHlwZT13cyZob3N0PWhlbGxvLW11c2UtZGVwbGV4by5kZS5kZXBsZXhvLmNvbSZwYXRoPSUyRjdmM2s5cS0ybTh4LTQ2cHYjdmxlc3MtZGVwbGV4by1mcgp2bGVzczovLzdjNGE5ZjJlLTFiOGQtNGU2My1hNWYyLTlkM2M2ZThhMWI0N0B2bGVzcy1yYWlsd2F5LXVzLXByb2R1Y3Rpb24udXAucmFpbHdheS5hcHA6NDQzP2VuY3J5cHRpb249bm9uZSZzZWN1cml0eT10bHMmc25pPXZsZXNzLXJhaWx3YXktdXMtcHJvZHVjdGlvbi51cC5yYWlsd2F5LmFwcCZ0eXBlPXdzJmhvc3Q9dmxlc3MtcmFpbHdheS11cy1wcm9kdWN0aW9uLnVwLnJhaWx3YXkuYXBwJnBhdGg9JTJGOW1LNHhRN3ZaMndUOHJZI3ZsZXNzLXJhaWx3YXktdXMKdmxlc3M6Ly83OTI0OTY1NC1kZjA4LTQwM2QtYjkwZi0yZTdjMDNlZTJiZTNAdmxlc3Mtd2FzbWVyLXVzLndhc21lci5hcHA6NDQzP2VuY3J5cHRpb249bm9uZSZzZWN1cml0eT10bHMmc25pPXZsZXNzLXdhc21lci11cy53YXNtZXIuYXBwJnR5cGU9d3MmaG9zdD12bGVzcy13YXNtZXItdXMud2FzbWVyLmFwcCZwYXRoPSUyRmMxMDQ4OGEyNmMwNGRjNDYjdmxlc3Mtd2FzbWVyLXNnCnZsZXNzOi8vNTM1YTFkM2QtNjk0NS00MTBjLTkxMzUtNmMzNWNjNzBhMWYyQHhyYXktczEzaXc5bDItd29ya3NwYWNlLXl3Z2xmcy5jbG9hZHkuaW86NDQzP2VuY3J5cHRpb249bm9uZSZzZWN1cml0eT10bHMmc25pPXhyYXktczEzaXc5bDItd29ya3NwYWNlLXl3Z2xmcy5jbG9hZHkuaW8mdHlwZT13cyZob3N0PXhyYXktczEzaXc5bDItd29ya3NwYWNlLXl3Z2xmcy5jbG9hZHkuaW8mcGF0aD0lMkZDdDdJQVN5aE9KOUV0YU9zI3ZsZXNzLWNsb2FkeS11cwp2bGVzczovLzcxNWExYTc3LTVjODEtNDIyZS1hZTM3LThhY2U0NDc0NDMwYUB4cmF5LWhlcm9rdS1wcm9kdWN0aW9uLWE0MzBlYjk0LnVwLnJhaWx3YXkuYXBwOjQ0Mz9lbmNyeXB0aW9uPW5vbmUmc2VjdXJpdHk9dGxzJnNuaT14cmF5LWhlcm9rdS1wcm9kdWN0aW9uLWE0MzBlYjk0LnVwLnJhaWx3YXkuYXBwJnR5cGU9d3MmaG9zdD14cmF5LWhlcm9rdS1wcm9kdWN0aW9uLWE0MzBlYjk0LnVwLnJhaWx3YXkuYXBwJnBhdGg9JTJGWVdSYUhHbHNYZUpaa0hjVCN2bGVzcy1yYWlsd2F5Mi11cwo=";
+document.getElementById("suburl").textContent = location.origin + "/sub";
+document.getElementById("b64").textContent = B64;
+function copySub(){navigator.clipboard.writeText(B64).then(function(){document.getElementById("msg").textContent="已复制订阅内容";});}
+function copyUrl(){navigator.clipboard.writeText(location.origin + "/sub").then(function(){document.getElementById("msg").textContent="已复制订阅链接";});}
+</script>
+</body>
+</html>
